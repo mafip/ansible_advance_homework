@@ -1,2 +1,20 @@
 ---
 # tasks file for lb-tier
+
+- name: install {{ package}}
+  yum:
+    name: "{{ package }}"
+    state: latest
+  notify: Restart {{ package }}
+
+- name: enable {{ package }} at boot
+  service:
+    name: "{{ package }}"
+    enabled: yes
+
+- name: configure {{ package }} to load balance over app servers
+  template:
+    src: haproxy.cfg.j2
+    dest: /etc/haproxy/haproxy.cfg
+    mode: 0644
+  notify: Restart {{ package }}
